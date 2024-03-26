@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct Node {
+    char* op;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+Node* createNode(char* op, Node* left, Node* right) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->op = op;
+    node->left = left;
+    node->right = right;
+    return node;
+}
+
+void generateCode(Node* root) {
+    if (root == NULL) {
+        return;
+    }
+    if (strcmp(root->op, "+") == 0) {
+        generateCode(root->left);
+        generateCode(root->right);
+        printf("    add eax, ebx\n");
+    } else if (strcmp(root->op, "-") == 0) {
+        generateCode(root->left);
+        generateCode(root->right);
+        printf("    sub eax, ebx\n");
+    } else if (strcmp(root->op, "*") == 0) {
+        generateCode(root->left);
+        generateCode(root->right);
+        printf("    imul eax, ebx\n");
+    } else if (strcmp(root->op, "/") == 0) {
+        generateCode(root->left);
+        generateCode(root->right);
+        printf("    mov edx, 0\n");
+        printf("    idiv ebx\n");
+    } else {
+        // Assuming it's a constant
+        printf("    mov eax, %s\n", root->op);
+    }
+}
+
+int main() {
+    // Example AST for expression: (5 * (2 + 3))
+    Node* expression = createNode("*",
+                           createNode("5", NULL, NULL),
+                           createNode("+",
+                                 createNode("2", NULL, NULL),
+                                 createNode("3", NULL, NULL)));
+
+    printf("section .text\n");
+    printf("global _start\n");
+    printf("_start:\n");
+
+    generateCode(expression);
+
+    printf("    mov ebx, eax\n");  // Store result in ebx
+    printf("    mov eax, 1\n");    // System call for exit
+    printf("    int 0x80\n");
+
+    return 0;
+}
