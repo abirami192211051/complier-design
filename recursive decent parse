@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+// Function prototypes
+int expr();
+int term();
+int factor();
+
+char *input;
+
+// Function to match a terminal symbol
+int match(char terminal) {
+    if (*input == terminal) {
+        input++;
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+// Grammar functions
+int expr() {
+    int result = term();
+    while (*input == '+' || *input == '-') {
+        if (match('+')) {
+            result += term();
+        } else if (match('-')) {
+            result -= term();
+        }
+    }
+    return result;
+}
+
+int term() {
+    int result = factor();
+    while (*input == '*' || *input == '/') {
+        if (match('*')) {
+            result *= factor();
+        } else if (match('/')) {
+            int divisor = factor();
+            if (divisor != 0) {
+                result /= divisor;
+            } else {
+                printf("Error: Division by zero\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+    return result;
+}
+
+int factor() {
+    int result;
+    if (*input == '(') {
+        match('(');
+        result = expr();
+        match(')');
+    } else if (isdigit(*input)) {
+        result = *input - '0';
+        input++;
+    } else {
+        printf("Error: Invalid input\n");
+        exit(EXIT_FAILURE);
+    }
+    return result;
+}
+
+int main() {
+    char input_string[100];
+    printf("Enter an arithmetic expression: ");
+    fgets(input_string, sizeof(input_string), stdin);
+
+    // Set input pointer
+    input = input_string;
+
+    // Remove newline character
+    input[strlen(input) - 1] = '\0';
+
+    // Parse and evaluate the expression
+    int result = expr();
+
+    // Check for extra characters after parsing
+    if (*input != '\0') {
+        printf("Error: Invalid input\n");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Result: %d\n", result);
+
+    return 0;
+}
