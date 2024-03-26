@@ -1,0 +1,15 @@
+%{
+#include<stdio.h>
+int n=0;
+%}
+%%
+"/"[a-zA-z0-9\n\t]+"/" {n++;}
+"//"[a-zA-z0-9\n\t]+"//" {n++;}
+%%
+int yywrap()
+{}
+int main()
+{
+yylex();
+printf("\nenter the comment lines:%d",n);
+}
