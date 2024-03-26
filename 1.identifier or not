@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <ctype.h>
+#include <string.h>
+
+// Function to check if a string is a valid identifier
+bool isIdentifier(char* str) {
+    // Check if the first character is a letter or underscore
+    if (!isalpha(str[0]) && str[0] != '_') {
+        return false;
+    }
+
+    // Check each subsequent character
+    for (int i = 1; i < strlen(str); i++) {
+        // If the character is neither a letter, digit, nor underscore, it's invalid
+        if (!isalnum(str[i]) && str[i] != '_') {
+            return false;
+        }
+    }
+
+    // If all characters pass the checks, it's a valid identifier
+    return true;
+}
+
+int main() {
+    char input[100];
+
+    // Input from user
+    printf("Enter a string: ");
+    fgets(input, sizeof(input), stdin);
+
+    // Remove newline character
+    input[strcspn(input, "\n")] = '\0';
+
+    // Check if the input is an identifier
+    if (isIdentifier(input)) {
+        printf("%s is a valid identifier.\n", input);
+    } else {
+        printf("%s is not a valid identifier.\n", input);
+    }
+
+    return 0;
+}
