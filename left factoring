@@ -1,0 +1,47 @@
+#include<stdio.h>
+#include<string.h>
+
+// Function to left factor a grammar
+void leftFactor(char nonTerminal, char productions[][20], int numProductions) {
+    char commonPrefix[20] = "";
+    int prefixLen = 0;
+
+    // Find common prefix among productions
+    for(int i = 0; i < numProductions; i++) {
+        if(productions[i][0] == nonTerminal) {
+            if(strlen(commonPrefix) == 0) {
+                strcpy(commonPrefix, productions[i] + 1);
+                prefixLen = strlen(commonPrefix);
+            } else {
+                int j;
+                for(j = 0; j < prefixLen && j < strlen(productions[i] + 1); j++) {
+                    if(commonPrefix[j] != productions[i][j + 1])
+                        break;
+                }
+                prefixLen = j;
+                commonPrefix[j] = '\0';
+            }
+        }
+    }
+
+    // Print left factored productions
+    printf("%c -> %s\n", nonTerminal, commonPrefix);
+    for(int i = 0; i < numProductions; i++) {
+        if(productions[i][0] == nonTerminal) {
+            if(strcmp(productions[i] + 1, commonPrefix) != 0) {
+                printf("%c' -> %s\n", nonTerminal, productions[i] + prefixLen + 1);
+            }
+        }
+    }
+}
+
+int main() {
+    // Example grammar with common prefix
+    char productions[][20] = {"Aab", "Aac", "Abd", "Aef"};
+    int numProductions = 4;
+
+    // Left factor for non-terminal 'A'
+    leftFactor('A', productions, numProductions);
+
+    return 0;
+}
