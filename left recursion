@@ -1,0 +1,42 @@
+#include<stdio.h>
+#include<string.h>
+
+// Function to remove left recursion
+void removeLeftRecursion(char nonTerminal, char productions[][20], int numProductions) {
+    char newProductions[numProductions][20];
+    int newProdCount = 0;
+
+    // Iterate through each production
+    for(int i = 0; i < numProductions; i++) {
+        if(productions[i][0] == nonTerminal) {
+            // Extract the remaining part of production
+            char remaining[20];
+            strcpy(remaining, productions[i] + 1);
+
+            // Add new productions without left recursion
+            for(int j = 0; j < numProductions; j++) {
+                if(productions[j][0] != nonTerminal) {
+                    strcpy(newProductions[newProdCount], productions[j]);
+                    strcat(newProductions[newProdCount], remaining);
+                    newProdCount++;
+                }
+            }
+        }
+    }
+
+    // Print the new productions
+    for(int i = 0; i < newProdCount; i++) {
+        printf("%c -> %s\n", nonTerminal, newProductions[i]);
+    }
+}
+
+int main() {
+    // Example grammar with left recursion
+    char productions[][20] = {"Aa", "Ab", "Ac", "Ad", "Ba", "Bb", "Bc", "Bd"};
+    int numProductions = 8;
+
+    // Remove left recursion for non-terminal 'B'
+    removeLeftRecursion('B', productions, numProductions);
+
+    return 0;
+}
